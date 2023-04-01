@@ -2,7 +2,8 @@ import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { toast } from 'react-toastify'
 import { AuthResponse } from 'src/types/auth.type'
 import httpStatusCode from 'src/constants/httpStatusCode.enum'
-import { getAccessTokenFromLS, removeAccessTokenFromLS, saveAccessTokenToLS } from './auth'
+import { getAccessTokenFromLS, removeLS, setAccessTokenToLS, setProfileToLS } from './auth'
+import { path } from 'src/constants/path'
 
 class Http {
   instance: AxiosInstance
@@ -30,12 +31,15 @@ class Http {
     )
     this.instance.interceptors.response.use(
       (response) => {
-        if (response.config.url === '/login' || response.config.url === '/register') {
-          this.accessToken = (response.data as AuthResponse).data.access_token
-          saveAccessTokenToLS(this.accessToken)
-        } else if (response.config.url === '/logout') {
+        const config = response.config
+        if (config.url === path.login || config.url === path.register) {
+          const data = response.data as AuthResponse
+          this.accessToken = data.data.access_token
+          setAccessTokenToLS(this.accessToken)
+          setProfileToLS(data.data.user)
+        } else if (config.url === path.logout) {
           this.accessToken = ''
-          removeAccessTokenFromLS()
+          removeLS()
         }
         return response
       },

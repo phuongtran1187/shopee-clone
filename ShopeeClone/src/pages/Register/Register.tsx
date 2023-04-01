@@ -11,6 +11,7 @@ import { resgisterAccount } from 'src/apis/auth.api'
 import { isUnprocessableEntityError } from 'src/utils/utils'
 import { ResponseErrorApi } from 'src/types/utils.type'
 import { AppContext } from 'src/context/app.context'
+import Button from 'src/components/Button'
 
 type FormData = SchemaType
 
@@ -33,7 +34,7 @@ export default function Register() {
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         setIsAuthentication(true)
         navigate('/')
       },
@@ -85,12 +86,14 @@ export default function Register() {
                 errorMessage={errors.confirm_password?.message}
               />
               <div className='mt-2'>
-                <button
+                <Button
+                  isLoading={registerAccountMutation.isLoading}
+                  disabled={registerAccountMutation.isLoading}
                   type='submit'
-                  className='w-full bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
+                  className='flex w-full items-center justify-center bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
                 >
                   Đăng Ký
-                </button>
+                </Button>
               </div>
               <div className='mt-8 flex items-center justify-center'>
                 <span className='text-gray-400'>Bạn đã có tài khoản?</span>

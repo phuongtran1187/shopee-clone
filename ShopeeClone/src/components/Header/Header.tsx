@@ -87,7 +87,7 @@ export default function Header() {
             >
               <div className='flex-shink-0 mr-2 h-6 w-6'>
                 <img
-                  src='https://scontent.fsgn2-9.fna.fbcdn.net/v/t39.30808-6/272901590_3139960266285190_3523808661683619147_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=u1sjL1m5jxcAX-QrTh_&_nc_ht=scontent.fsgn2-9.fna&oh=00_AfDz5Mt3TuMc5OMR44NMKzJLrBlIYUrvS4oTGIpy9b8xwQ&oe=641A7462'
+                  src='https://lh3.googleusercontent.com/ogw/AAEL6sgF-BMKiEJ20mCkGtfghgAn4gVgKyEHRSyuZBQZsQ=s32-c-mo'
                   alt='avatar'
                   className='h-full w-full rounded-full object-cover'
                 />

@@ -1,4 +1,3 @@
-import { profile } from 'console'
 import { createContext, useState } from 'react'
 import { User } from 'src/types/user.type'
 import { getAccessTokenFromLS, getProfileFromLS } from 'src/utils/auth'

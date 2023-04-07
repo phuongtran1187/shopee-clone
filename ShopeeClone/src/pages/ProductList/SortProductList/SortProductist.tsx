@@ -15,8 +15,13 @@ export default function SortProductist() {
           <button className='h-8 bg-white px-4 text-center text-sm capitalize text-black hover:bg-slate-100'>
             Bán chạy
           </button>
-          <select className='h-8 bg-white px-4 text-left text-sm capitalize text-black outline-none hover:bg-slate-100'>
-            <option value='price'>Giá</option>
+          <select
+            className='h-8 bg-white px-4 text-left text-sm capitalize text-black outline-none hover:bg-slate-100'
+            defaultValue='Giá'
+          >
+            <option value='price' disabled>
+              Giá
+            </option>
             <option value='price:asc'>Giá: Thấp đến cao</option>
             <option value='price:desc'>Giá: Cao xuống thấp</option>
           </select>

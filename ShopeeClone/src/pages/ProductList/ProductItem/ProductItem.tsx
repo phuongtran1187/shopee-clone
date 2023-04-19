@@ -20,11 +20,11 @@ export default function ProductItem({ product }: Props) {
           <div className='mt-3 flex items-center'>
             <div className='max-w-[50%] truncate text-gray-500 line-through'>
               <span className='text-xs'>₫</span>
-              <span>{formatCurency(product.price_before_discount)}</span>
+              <span className='text-sm'>{formatCurency(product.price_before_discount)}</span>
             </div>
             <div className='ml-1 truncate text-orange'>
               <span className='text-xs'>₫</span>
-              <span>{formatCurency(product.price)}</span>
+              <span className='text-sm'>{formatCurency(product.price)}</span>
             </div>
           </div>
           <div className='mt-3 flex items-center justify-between'>

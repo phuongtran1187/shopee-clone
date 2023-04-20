@@ -105,7 +105,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
           }}
           className='mx-2 cursor-pointer rounded border bg-white py-2 px-3 shadow-sm'
         >
-          Prev
+          Next
         </Link>
       )}
     </div>

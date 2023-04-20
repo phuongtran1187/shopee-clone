@@ -1,12 +1,26 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, createSearchParams } from 'react-router-dom'
 import Button from 'src/components/Button'
 import { path } from 'src/constants/path'
+import { Category } from 'src/types/category.type'
+import { QueryConfig } from '../ProductList'
+import classNames from 'classnames'
 
-export default function AsideFilter() {
+interface Props {
+  categories: Category[]
+  queryConfig: QueryConfig
+}
+
+export default function AsideFilter({ categories, queryConfig }: Props) {
+  const { category } = queryConfig
   return (
     <div className='py-4'>
-      <Link to={path.home} className='flex items-center font-bold'>
+      <Link
+        to={path.home}
+        className={classNames('flex items-center font-bold', {
+          'text-orange': !category
+        })}
+      >
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
@@ -25,30 +39,43 @@ export default function AsideFilter() {
       </Link>
       <div className='my-4 h-[1px] bg-gray-300' />
       <ul>
-        <li className='py-2 pl-2'>
-          <Link to={path.home} className='relative px-2 font-semibold text-orange'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='currentColor'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='absolute top-1 left-[-10px] h-2 w-2 fill-orange'
-            >
-              <path
-                fillRule='evenodd'
-                d='M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z'
-                clipRule='evenodd'
-              />
-            </svg>
-            Thời trang nam
-          </Link>
-        </li>
-        <li className='py-2 pl-2'>
-          <Link to={path.home} className='relative px-2'>
-            Điện thoại
-          </Link>
-        </li>
+        {categories.map((categoryItem) => {
+          const isActive = categoryItem._id === category
+          return (
+            <li key={categoryItem._id} className='py-2 pl-2'>
+              <Link
+                to={{
+                  pathname: path.home,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    category: categoryItem._id
+                  }).toString()
+                }}
+                className={classNames('relative px-2 ', {
+                  'font-semibold text-orange': isActive
+                })}
+              >
+                {isActive && (
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='currentColor'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='absolute top-1 left-[-10px] h-2 w-2 fill-orange'
+                  >
+                    <path
+                      fillRule='evenodd'
+                      d='M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z'
+                      clipRule='evenodd'
+                    />
+                  </svg>
+                )}
+                {categoryItem.name}
+              </Link>
+            </li>
+          )
+        })}
       </ul>
       <Link to={path.home} className='mt-4 flex items-center font-bold uppercase'>
         <svg

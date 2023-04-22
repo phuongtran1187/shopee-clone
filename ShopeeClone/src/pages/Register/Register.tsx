@@ -6,14 +6,14 @@ import { useMutation } from '@tanstack/react-query'
 import { omit } from 'lodash'
 
 import Input from 'src/components/Input'
-import { schema, SchemaType } from 'src/utils/rulesValidation'
+import { schemaRegister, SchemaRegisterType } from 'src/utils/rulesValidation'
 import { resgisterAccount } from 'src/apis/auth.api'
 import { isUnprocessableEntityError } from 'src/utils/utils'
 import { ResponseErrorApi } from 'src/types/utils.type'
 import { AppContext } from 'src/context/app.context'
 import Button from 'src/components/Button'
 
-type FormData = SchemaType
+type FormData = SchemaRegisterType
 
 export default function Register() {
   const { setIsAuthentication, setProfile } = useContext(AppContext)
@@ -24,7 +24,7 @@ export default function Register() {
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schemaRegister)
   })
 
   const registerAccountMutation = useMutation({

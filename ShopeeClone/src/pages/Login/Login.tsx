@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { getRules, schema, SchemaLoginType } from 'src/utils/rulesValidation'
+import { getRules, schema, schemaLogin, SchemaLoginType } from 'src/utils/rulesValidation'
 import Input from 'src/components/Input'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
@@ -14,7 +14,6 @@ import Button from 'src/components/Button'
 type FormData = SchemaLoginType
 
 export default function Login() {
-  const schemaLogin = schema.omit(['confirm_password'])
   const { setIsAuthentication, setProfile } = useContext(AppContext)
   const navigate = useNavigate()
   const {

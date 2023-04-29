@@ -1,5 +1,5 @@
 import React from 'react'
-import { QueryConfig } from '../ProductList'
+import { QueryConfig } from '../../ProductList'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import { path } from 'src/constants/path'
 

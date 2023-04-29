@@ -20,3 +20,7 @@ export function formatShortNumber(number: number) {
     .replace('.', ',')
     .toLowerCase()
 }
+
+export function rateSale(originalPrice: number, salePrice: number) {
+  return Math.round(((originalPrice - salePrice) / originalPrice) * 100) + '%'
+}

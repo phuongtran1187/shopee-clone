@@ -16,6 +16,7 @@ export default function ProductDetail() {
   })
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const [activeImage, setActiveImange] = useState('')
+  const imageRef = useRef<HTMLImageElement>(null)
   const product = productDetailData?.data.data
   const currentImages = useMemo(
     () => (product ? product?.images.slice(...currentIndexImages) : []),
@@ -44,6 +45,24 @@ export default function ProductDetail() {
     }
   }
 
+  const onMoveZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    const image = imageRef.current as HTMLImageElement
+    const { offsetX, offsetY } = event.nativeEvent
+    const { naturalHeight, naturalWidth } = image
+    const left = offsetX * (1 - naturalWidth / rect.width)
+    const top = offsetY * (1 - naturalHeight / rect.height)
+    image.style.width = naturalWidth + 'px'
+    image.style.height = naturalHeight + 'px'
+    image.style.maxWidth = 'unset'
+    image.style.top = top + 'px'
+    image.style.left = left + 'px'
+  }
+
+  const handleRemoveZoom = () => {
+    imageRef.current?.removeAttribute('style')
+  }
+
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
@@ -51,11 +70,16 @@ export default function ProductDetail() {
         <div className='bg-white p-4 shadow'>
           <div className='grid grid-cols-12 gap-9'>
             <div className='col-span-5'>
-              <div className='relative w-full pt-[100%] shadow'>
+              <div
+                className='relative w-full cursor-zoom-in overflow-hidden pt-[100%] shadow'
+                onMouseMove={onMoveZoom}
+                onMouseLeave={handleRemoveZoom}
+              >
                 <img
                   src={activeImage}
                   alt={product.name}
-                  className='absolute top-0 left-0 h-full w-full bg-white object-cover'
+                  className='pointer-events-none absolute top-0 left-0 h-full w-full bg-white object-cover'
+                  ref={imageRef}
                 />
               </div>
               <div className='relative mt-4 grid grid-cols-5 gap-1'>

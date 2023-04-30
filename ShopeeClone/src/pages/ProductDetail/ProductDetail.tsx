@@ -5,8 +5,9 @@ import { useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import InputNumber from 'src/components/InputNumber'
 import ProductRating from 'src/components/ProductRating'
-import { Product } from 'src/types/product.type'
+import { Product, ProductListConfig } from 'src/types/product.type'
 import { formatCurency, formatShortNumber, getIdFromNameId, rateSale } from 'src/utils/utils'
+import ProductItem from '../ProductList/components/ProductItem'
 
 export default function ProductDetail() {
   const { nameId } = useParams()
@@ -24,6 +25,18 @@ export default function ProductDetail() {
     [product, currentIndexImages]
   )
 
+  const queryConfig: ProductListConfig = { page: '1', limit: '20', category: product?.category._id }
+
+  const { data: productData } = useQuery({
+    queryKey: ['products', queryConfig],
+    queryFn: () => {
+      return productApi.getProducts(queryConfig)
+    },
+    staleTime: 3 * 60 * 1000,
+    enabled: Boolean(product)
+  })
+
+  console.log(productData)
   useEffect(() => {
     if (product && product.images.length > 0) {
       setActiveImange(product.images[0])
@@ -229,6 +242,18 @@ export default function ProductDetail() {
           <div className='mx-4 mt-12 mb-4 text-sm leading-loose'>
             <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }} />
           </div>
+        </div>
+        <div className='mt-8'>
+          <div className='font-semibold uppercase text-gray-500'>Có thể bạn cũng thích</div>
+          {productData && (
+            <div className='mt-6 grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
+              {productData.data.data.products.map((product) => (
+                <div className='col-span-1' key={product._id}>
+                  <ProductItem product={product} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

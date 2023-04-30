@@ -10,7 +10,6 @@ import { SchemaType, schema } from 'src/utils/rulesValidation'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
-import { config } from 'process'
 
 type FormData = Pick<SchemaType, 'name'>
 

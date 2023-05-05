@@ -231,7 +231,10 @@ export default function Header() {
                             ? `${purchaseInCart.length - MAX_PERCHASES_DISPLAY} Thêm hàng vào giỏ`
                             : ''}
                         </div>
-                        <Link to='/' className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:opacity-80'>
+                        <Link
+                          to={path.cart}
+                          className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:opacity-80'
+                        >
                           Xem giỏ hàng
                         </Link>
                       </div>

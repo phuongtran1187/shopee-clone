@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import React, { useContext } from 'react'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import { logoutAccount } from 'src/apis/auth.api'
@@ -10,10 +10,14 @@ import { SchemaType, schema } from 'src/utils/rulesValidation'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
+import { purchasesStatus } from 'src/constants/purchase'
+import purchaseApi from 'src/apis/purchase.api'
+import { formatCurency } from 'src/utils/utils'
 
 type FormData = Pick<SchemaType, 'name'>
 
 const nameSchema = schema.pick(['name'])
+const MAX_PERCHASES_DISPLAY = 5
 
 export default function Header() {
   const { isAuthentication, setIsAuthentication, profile, setProfile } = useContext(AppContext)
@@ -54,6 +58,13 @@ export default function Header() {
       search: createSearchParams(config).toString()
     })
   })
+
+  const { data: purchasesInCartData } = useQuery({
+    queryKey: ['purchases', { status: purchasesStatus.inCart }],
+    queryFn: () => purchaseApi.readPurchase({ status: purchasesStatus.inCart })
+  })
+
+  const purchaseInCart = purchasesInCartData?.data.data
 
   const handleLogout = () => {
     logoutMutation.mutate()
@@ -187,66 +198,55 @@ export default function Header() {
             <Popover
               renderPopover={
                 <div className='relative max-w-[400px] rounded-sm bg-white text-sm shadow-sm'>
-                  <div className='p-2'>
-                    <div className='capitalize text-gray-400'>Sản phẩm mới thêm</div>
-                    <div className='mt-5'>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shink-0'>
-                          <img
-                            src='https://cf.shopee.vn/file/c06dc23ed9151941cc19e78b5c1a3d0c_tn'
-                            alt='cart-img'
-                            className='h-11 w-11 object-cover'
-                          />
-                        </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>Chelsea 2011-12 retro S-XL 8#Lightsard 9#Áo Đấu Sân Nhà Farres</div>
-                        </div>
-                        <div className='flex-shink-0 ml-2'>
-                          <span className='text-orange'>₫333.375</span>
-                        </div>
+                  {purchaseInCart && purchaseInCart.length > 0 ? (
+                    <div className='p-2'>
+                      <div className='capitalize text-gray-400'>Sản phẩm mới thêm</div>
+                      <div className='mt-5'>
+                        {purchaseInCart.slice(0, MAX_PERCHASES_DISPLAY).map((purchase) => {
+                          return (
+                            <div className='mt-2 flex py-2 px-2 hover:bg-orange/10' key={purchase._id}>
+                              <div className='flex-shrink-0'>
+                                <img
+                                  src={purchase.product.image}
+                                  alt={purchase.product.name}
+                                  className='h-11 w-11 object-cover'
+                                />
+                              </div>
+                              <div className='ml-2 flex-grow overflow-hidden'>
+                                <div className='truncate'>{purchase.product.name}</div>
+                              </div>
+                              <div className='ml-2 flex-shrink-0'>
+                                <span className='text-orange'>₫{formatCurency(purchase.price)}</span>
+                              </div>
+                            </div>
+                          )
+                        })}
                       </div>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shink-0'>
-                          <img
-                            src='https://cf.shopee.vn/file/c06dc23ed9151941cc19e78b5c1a3d0c_tn'
-                            alt='cart-img'
-                            className='h-11 w-11 object-cover'
-                          />
+                      <div className='mt-6 flex items-center justify-between'>
+                        <div className='text-xs capitalize'>
+                          {purchaseInCart.length > MAX_PERCHASES_DISPLAY
+                            ? `${purchaseInCart.length - MAX_PERCHASES_DISPLAY} Thêm hàng vào giỏ`
+                            : ''}
                         </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>Chelsea 2011-12 retro S-XL 8#Lightsard 9#Áo Đấu Sân Nhà Farres</div>
-                        </div>
-                        <div className='flex-shink-0 ml-2'>
-                          <span className='text-orange'>₫333.375</span>
-                        </div>
-                      </div>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shink-0'>
-                          <img
-                            src='https://cf.shopee.vn/file/c06dc23ed9151941cc19e78b5c1a3d0c_tn'
-                            alt='cart-img'
-                            className='h-11 w-11 object-cover'
-                          />
-                        </div>
-                        <div className='ml-2 flex-grow overflow-hidden'>
-                          <div className='truncate'>Chelsea 2011-12 retro S-XL 8#Lightsard 9#Áo Đấu Sân Nhà Farres</div>
-                        </div>
-                        <div className='flex-shink-0 ml-2'>
-                          <span className='text-orange'>₫333.375</span>
-                        </div>
+                        <Link to='/' className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:opacity-80'>
+                          Xem giỏ hàng
+                        </Link>
                       </div>
                     </div>
-                    <div className='mt-6 flex items-center justify-between'>
-                      <div className='text-xs capitalize'>1 Thêm hàng vào giỏ</div>
-                      <Link to='/' className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:opacity-80'>
-                        Xem giỏ hàng
-                      </Link>
+                  ) : (
+                    <div className='flex h-[300px] w-[300px] flex-col items-center justify-center p-2'>
+                      <img
+                        src='https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/9bdd8040b334d31946f49e36beaf32db.png'
+                        alt=''
+                        className='h-24 w-24'
+                      />
+                      <div className='mt-3 capitalize'>giỏ hàng của bạn còn trống</div>
                     </div>
-                  </div>
+                  )}
                 </div>
               }
             >
-              <Link to='/'>
+              <Link to='/' className='relative'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
@@ -261,6 +261,9 @@ export default function Header() {
                     d='M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z'
                   />
                 </svg>
+                <span className='absolute top-0 left-[16px] rounded-full bg-white px-[8px] py-[1px] text-xs text-orange'>
+                  {purchaseInCart ? purchaseInCart.length : 0}
+                </span>
               </Link>
             </Popover>
           </div>

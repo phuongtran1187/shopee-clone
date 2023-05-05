@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, forwardRef } from 'react'
+import React, { InputHTMLAttributes, forwardRef, useState } from 'react'
 export interface inputNumberProps extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string
   classNameInput?: string
@@ -12,19 +12,22 @@ const InputNumber = forwardRef<HTMLInputElement, inputNumberProps>(function Inpu
     classNameInput = 'p-3 w-full border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm',
     classNameError = 'mt-1 text-red-600 min-h-[1.25rem] text-sm',
     onChange,
+    value = '',
     ...rest
   },
   ref
 ) {
+  const [localState, setLocalState] = useState<string>(value as string)
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
-    if ((/^\d+$/.test(value) || value === '') && onChange) {
-      onChange(e)
+    if (/^\d+$/.test(value) || value === '') {
+      onChange && onChange(e)
+      setLocalState(value)
     }
   }
   return (
     <div className={className}>
-      <input className={classNameInput} {...rest} onChange={handleOnChange} ref={ref} />
+      <input className={classNameInput} {...rest} onChange={handleOnChange} value={value || localState} ref={ref} />
       <div className={classNameError}>{errorMessage}</div>
     </div>
   )

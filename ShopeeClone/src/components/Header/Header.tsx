@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useContext } from 'react'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import { logoutAccount } from 'src/apis/auth.api'
@@ -20,6 +20,7 @@ const nameSchema = schema.pick(['name'])
 const MAX_PERCHASES_DISPLAY = 5
 
 export default function Header() {
+  const queryClient = useQueryClient()
   const { isAuthentication, setIsAuthentication, profile, setProfile } = useContext(AppContext)
   const queryConfig = useQueryConfig()
   const navigate = useNavigate()
@@ -36,6 +37,7 @@ export default function Header() {
     onSuccess: () => {
       setIsAuthentication(false)
       setProfile(null)
+      queryClient.removeQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] })
     }
   })
 
@@ -61,7 +63,8 @@ export default function Header() {
 
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
-    queryFn: () => purchaseApi.readPurchase({ status: purchasesStatus.inCart })
+    queryFn: () => purchaseApi.readPurchase({ status: purchasesStatus.inCart }),
+    enabled: isAuthentication
   })
 
   const purchaseInCart = purchasesInCartData?.data.data
@@ -261,9 +264,11 @@ export default function Header() {
                     d='M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z'
                   />
                 </svg>
-                <span className='absolute top-0 left-[16px] rounded-full bg-white px-[8px] py-[1px] text-xs text-orange'>
-                  {purchaseInCart ? purchaseInCart.length : 0}
-                </span>
+                {isAuthentication && (
+                  <span className='absolute top-0 left-[16px] rounded-full bg-white px-[8px] py-[1px] text-xs text-orange'>
+                    {purchaseInCart ? purchaseInCart.length : 0}
+                  </span>
+                )}
               </Link>
             </Popover>
           </div>

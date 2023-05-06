@@ -126,7 +126,7 @@ export default function Cart() {
                 <div className='ml-6 text-orange'>₫138.000</div>
               </div>
             </div>
-            <Button className='mt-2 mt-6 flex h-10 w-44 items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange/80 sm:mt-0 sm:ml-4'>
+            <Button className='mt-6 flex h-10 w-44 items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange/80 sm:mt-0 sm:mt-0 sm:ml-4'>
               Mua hàng
             </Button>
           </div>

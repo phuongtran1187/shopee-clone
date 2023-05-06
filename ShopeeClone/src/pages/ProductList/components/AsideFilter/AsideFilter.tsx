@@ -27,6 +27,7 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
   const navigate = useNavigate()
   const {
     control,
+    reset,
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({
@@ -50,6 +51,7 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
   })
 
   const handleRemoveAllFilter = () => {
+    reset()
     navigate({
       pathname: path.home,
       search: createSearchParams(

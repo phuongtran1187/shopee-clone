@@ -6,6 +6,7 @@ import { AppContext } from 'src/context/app.context'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { logoutAccount } from 'src/apis/auth.api'
 import { purchasesStatus } from 'src/constants/purchase'
+import userImage from 'src/assets/images/userImage.png'
 
 export default function NavHeader() {
   const queryClient = useQueryClient()
@@ -88,11 +89,7 @@ export default function NavHeader() {
           }
         >
           <div className='flex-shink-0 mr-2 h-6 w-6'>
-            <img
-              src='https://lh3.googleusercontent.com/ogw/AAEL6sgF-BMKiEJ20mCkGtfghgAn4gVgKyEHRSyuZBQZsQ=s32-c-mo'
-              alt='avatar'
-              className='h-full w-full rounded-full object-cover'
-            />
+            <img src={profile?.avatar || userImage} alt='avatar' className='h-full w-full rounded-full object-cover' />
           </div>
           <div>{profile?.email}</div>
         </Popover>

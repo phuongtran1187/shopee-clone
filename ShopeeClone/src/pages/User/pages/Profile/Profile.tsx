@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import userApi from 'src/apis/user.api'
 import Button from 'src/components/Button'
@@ -11,13 +11,19 @@ import DateSelect from '../../Components/DateSelect'
 import { AppContext } from 'src/context/app.context'
 import { toast } from 'react-toastify'
 import { setProfileToLS } from 'src/utils/auth'
-import userImage from 'src/assets/images/userImage.png'
+import { getAvatarUrl, isUnprocessableEntityError } from 'src/utils/utils'
+import { ResponseErrorApi } from 'src/types/utils.type'
+import config from 'src/constants/config'
 
 type FormData = Pick<UserSchemaType, 'name' | 'address' | 'phone' | 'date_of_birth' | 'avatar'>
-
+type FormDataError = Omit<FormData, 'date_of_birth'> & {
+  date_of_birth: string
+}
 const profileSchema = userSchema.pick(['name', 'address', 'phone', 'avatar', 'date_of_birth'])
 
 export default function Profile() {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<File>()
   const { setProfile } = useContext(AppContext)
   const { data: profileData, refetch } = useQuery({
     queryKey: ['profile'],
@@ -26,6 +32,7 @@ export default function Profile() {
   const profile = profileData?.data.data
 
   const updateUserMutation = useMutation(userApi.updateUser)
+  const updateAvatarMutation = useMutation(userApi.uploadAvatar)
 
   const {
     register,
@@ -46,6 +53,10 @@ export default function Profile() {
     resolver: yupResolver(profileSchema)
   })
 
+  const previewImage = useMemo(() => {
+    return file ? URL.createObjectURL(file) : ''
+  }, [file])
+
   useEffect(() => {
     if (profile) {
       setValue('name', profile?.name)
@@ -56,16 +67,58 @@ export default function Profile() {
     }
   }, [profile, setValue])
 
+  const avatar = watch('avatar')
+
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data)
-    const res = await updateUserMutation.mutateAsync({ ...data, date_of_birth: data.date_of_birth?.toISOString() })
-    setProfile(res.data.data)
-    setProfileToLS(res.data.data)
-    toast.success(res.data.message, {
-      autoClose: 1000
-    })
-    refetch()
+    try {
+      let avatarRes = avatar
+      if (file) {
+        const form = new FormData()
+        form.append('image', file)
+        const uploadRes = await updateAvatarMutation.mutateAsync(form)
+        avatarRes = uploadRes.data.data
+        setValue('avatar', avatar)
+      }
+      const res = await updateUserMutation.mutateAsync({
+        ...data,
+        date_of_birth: data.date_of_birth?.toISOString(),
+        avatar: avatarRes
+      })
+      setProfile(res.data.data)
+      setProfileToLS(res.data.data)
+      toast.success(res.data.message, {
+        autoClose: 1000
+      })
+      refetch()
+    } catch (error) {
+      if (isUnprocessableEntityError<ResponseErrorApi<FormDataError>>(error)) {
+        const formError = error.response?.data.data
+        if (formError) {
+          Object.keys(formError).forEach((key) => {
+            setError(key as keyof FormDataError, {
+              type: 'Server',
+              message: formError[key as keyof FormDataError]
+            })
+          })
+        }
+      }
+    }
   })
+
+  const handleClickBtnUpload = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = event.target.files?.[0]
+    if (fileInput && (fileInput.size >= config.maxSizeAvatar || fileInput.type.includes('image'))) {
+      toast.error('Ảnh không đúng định dạng!', {
+        autoClose: 1000
+      })
+    } else {
+      setFile(fileInput)
+    }
+  }
 
   return (
     <div className='rounded-sm bg-white px-2 pb-10 md:px-7 md:pb-20'>
@@ -151,12 +204,25 @@ export default function Profile() {
         <div className='flex justify-center md:w-72 md:border-l md:border-l-gray-200'>
           <div className='flex flex-col items-center'>
             <div className='my-5 h-24 w-24'>
-              <img src={profile?.avatar || userImage} alt='' className='h-full w-full rounded-full object-cover' />
+              <img
+                src={previewImage || getAvatarUrl(avatar)}
+                alt=''
+                className='h-full w-full rounded-full object-cover'
+              />
             </div>
-            <input type='file' className='hidden' accept='.jpg,.jpeg,.png' />
+            <input
+              type='file'
+              className='hidden'
+              accept='.jpg,.jpeg,.png'
+              ref={fileInputRef}
+              onChange={handleChangeFile}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onClick={(e) => ((e.target as any).value = null)}
+            />
             <button
               className='flex h-10 items-center justify-end rounded-sm border bg-white px-6 text-sm text-gray-600 shadow-sm'
               type='button'
+              onClick={handleClickBtnUpload}
             >
               Chọn ảnh
             </button>

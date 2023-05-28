@@ -6,7 +6,6 @@ import { AppContext } from 'src/context/app.context'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { logoutAccount } from 'src/apis/auth.api'
 import { purchasesStatus } from 'src/constants/purchase'
-import userImage from 'src/assets/images/userImage.png'
 import { getAvatarUrl } from 'src/utils/utils'
 
 export default function NavHeader() {

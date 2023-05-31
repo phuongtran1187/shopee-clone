@@ -21,7 +21,7 @@ export default function NotFound() {
           to={path.home}
           className='mt-10 inline rounded-lg border border-transparent bg-orange py-2 px-6 text-white'
         >
-          Reload
+          Go home
         </Link>
       </div>
     </div>

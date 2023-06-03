@@ -1,3 +1,3 @@
-import CartHeader from 'src/components/CartHeader'
+import HistoryPurchase from './HistoryPurchase'
 
-export default CartHeader
+export default HistoryPurchase

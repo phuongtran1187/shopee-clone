@@ -12,6 +12,7 @@ import { isUnprocessableEntityError } from 'src/utils/utils'
 import { ResponseErrorApi } from 'src/types/utils.type'
 import { AppContext } from 'src/context/app.context'
 import Button from 'src/components/Button'
+import { Helmet } from 'react-helmet-async'
 
 type FormData = SchemaRegisterType
 
@@ -57,6 +58,10 @@ export default function Register() {
 
   return (
     <div className='bg-orange'>
+      <Helmet>
+        <title>Đăng ký Shopee Clone</title>
+        <meta name='description' content='Đăng ký tài khoản Shopee Clone' />
+      </Helmet>
       <div className='container'>
         <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>

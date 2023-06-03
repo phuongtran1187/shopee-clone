@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { getRules, schema, schemaLogin, SchemaLoginType } from 'src/utils/rulesValidation'
+import { schemaLogin, SchemaLoginType } from 'src/utils/rulesValidation'
 import Input from 'src/components/Input'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
@@ -10,6 +10,7 @@ import { isUnprocessableEntityError } from 'src/utils/utils'
 import { ResponseErrorApi } from 'src/types/utils.type'
 import { AppContext } from 'src/context/app.context'
 import Button from 'src/components/Button'
+import { Helmet } from 'react-helmet-async'
 
 type FormData = SchemaLoginType
 
@@ -54,6 +55,10 @@ export default function Login() {
 
   return (
     <div className='bg-orange'>
+      <Helmet>
+        <title>Đăng nhập Shopee Clone</title>
+        <meta name='description' content='Đăng nhập vào Shopee Clone' />
+      </Helmet>
       <div className='container'>
         <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>

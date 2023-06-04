@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import ProductRating from 'src/components/ProductRating'
@@ -14,8 +14,10 @@ import { toast } from 'react-toastify'
 import { path } from 'src/constants/path'
 import { Helmet } from 'react-helmet-async'
 import { convert } from 'html-to-text'
+import { AppContext } from 'src/context/app.context'
 
 export default function ProductDetail() {
+  const { isAuthentication } = useContext(AppContext)
   const queryClient = useQueryClient()
   const { nameId } = useParams()
   const navigate = useNavigate()
@@ -101,13 +103,31 @@ export default function ProductDetail() {
         onSuccess: (data) => {
           toast.success(data.data.message, { autoClose: 1000 })
           queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] })
+        },
+        onError: () => {
+          if (!isAuthentication) {
+            toast.error('Vui lòng đăng nhập để mua hàng!', {
+              autoClose: 1000
+            })
+          }
         }
       }
     )
   }
 
   const handleBuyNow = async () => {
-    const res = await addToCartMutation.mutateAsync({ product_id: product?._id as string, buy_count: buyCount })
+    const res = await addToCartMutation.mutateAsync(
+      { product_id: product?._id as string, buy_count: buyCount },
+      {
+        onError: () => {
+          if (!isAuthentication) {
+            toast.error('Vui lòng đăng nhập để mua hàng!', {
+              autoClose: 1000
+            })
+          }
+        }
+      }
+    )
     const purchase = res.data.data
     navigate(path.cart, {
       state: {

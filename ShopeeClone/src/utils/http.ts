@@ -48,7 +48,7 @@ class Http {
         if (error.response?.status !== httpStatusCode.UnprocessableEntity) {
           const data: any | undefined = error.response?.data
           const message = data?.message || error.message
-          toast.error(message)
+          if (message !== 'Token không được gửi') toast.error(message)
         }
         if (error.response?.status === httpStatusCode.Unauthorized) {
           removeLS()
